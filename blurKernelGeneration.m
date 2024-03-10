@@ -1,17 +1,11 @@
-% Define the subdirectory name
-subdir_name = 'blur_kernels';
-
 % Check if the subdirectory exists, if not, create it
-if ~exist(subdir_name, 'dir')
-    mkdir(subdir_name);
+if ~exist('blur_kernels', 'dir')
+    mkdir('blur_kernels');
 end
 
 % Define the anxiety (A) and exposure (E) levels
-A_levels = [0.005, 0.001, 0.00005];
+A_levels = [0.005, 0.003, 0.001];
 E_levels = [1/25, 1/10, 1/5];
-
-% Define output kernel size
-kernel_size = [32, 32];
 
 % Trajectory curve parameters
 PSFsize = 32;
@@ -31,6 +25,7 @@ for i = 1:length(A_levels)
         PSF = createPSFs(Trajectory, PSFsize, E_levels(j), do_show, do_center); % Include other necessary parameters
         PSF_matrix = PSF{1}; % Access the first element since there is only 1 PSF per cell
         
+        % Convert PSF to RGB
         % Normalize the PSF to the range [0, 1]
         PSF_normalized = mat2gray(PSF_matrix);
         
@@ -38,13 +33,13 @@ for i = 1:length(A_levels)
         PSF_rgb = repmat(PSF_normalized, [1 1 3]);
 
         % Convert to uint8
-        PSF_uint8 = im2uint8(PSF_rgb);
+        PSF_uint8_rgb = im2uint8(PSF_rgb);
 
         % Construct the filename with the subdirectory
-        filename = fullfile(subdir_name, sprintf('kernel_A%d_E%d.jpg', i, j));
+        filename = fullfile('blur_kernels', sprintf('kernel_A%d_E%d.jpg', i, j));
 
         % Write the file to the subdirectory
-        imwrite(PSF_uint8, filename);
+        imwrite(PSF_uint8_rgb, filename);
       
     end
 end
